@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+import config from './config';
 import './initialize-db';
 import { authenticationRoute } from './authenticate'
 
@@ -12,21 +13,27 @@ import { connectDB } from './connect-db'
 import { addNewTask, updateTask } from './communicate-db';
 
 
-let port = process.env.PORT || 7777;
+let port = config.PORT;
 let app = express();
 
 
 
 app.use(
-    cors(),
+    cors({
+        origin: config.CORS_ORIGIN,
+        credentials: true
+    }),
     bodyParser.urlencoded({extended:true}),
     bodyParser.json()
 );
-app.listen(port,console.info("Server running, listening on port ", port));
+app.listen(port, () => {
+    console.info(`Server running in ${config.NODE_ENV} mode, listening on port ${port}`);
+    console.info(`CORS origin: ${config.CORS_ORIGIN}`);
+});
 
 authenticationRoute(app);
 
-if (process.env.NODE_ENV == `production`) {
+if (config.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname,'../../dist')));
     app.get('/*',(req,res)=>{
         res.sendFile(path.resolve('index.html'));
