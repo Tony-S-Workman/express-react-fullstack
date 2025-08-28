@@ -1,8 +1,21 @@
 import { addNewTask, updateTask } from './communicate-db'
 
-(async function(){
+// Mock connectDB to avoid actual database connections
+jest.mock('./connect-db', () => ({
+  connectDB: jest.fn().mockResolvedValue({
+    collection: jest.fn().mockReturnValue({
+      insertOne: jest.fn().mockResolvedValue({}),
+      updateOne: jest.fn().mockResolvedValue({})
+    })
+  })
+}));
+
+describe('Legacy Server Spec', () => {
+  it('should add and update tasks', async () => {
     await addNewTask({name:"Spec task",isComplete:true,id:"TEST-1"});
-    console.info("Added task");
     await updateTask({name:"Spec Task (UPDATED)",id:"TEST-1",isComplete:false});
-    console.info("Task updated");
-})();
+    
+    // Test passes if no errors are thrown
+    expect(true).toBe(true);
+  });
+});

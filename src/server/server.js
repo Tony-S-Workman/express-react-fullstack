@@ -26,10 +26,13 @@ app.use(
     bodyParser.urlencoded({extended:true}),
     bodyParser.json()
 );
-app.listen(port, () => {
-    console.info(`Server running in ${config.NODE_ENV} mode, listening on port ${port}`);
-    console.info(`CORS origin: ${config.CORS_ORIGIN}`);
-});
+// Only start the server if this file is being run directly
+if (require.main === module) {
+    app.listen(port, () => {
+        console.info(`Server running in ${config.NODE_ENV} mode, listening on port ${port}`);
+        console.info(`CORS origin: ${config.CORS_ORIGIN}`);
+    });
+}
 
 authenticationRoute(app);
 
