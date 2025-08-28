@@ -52,6 +52,9 @@
   "engines": {
     "node": "9.2.0"
   },
+  "jest": {
+   "testEnvironment": "node"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/node": "^7.0.0",
