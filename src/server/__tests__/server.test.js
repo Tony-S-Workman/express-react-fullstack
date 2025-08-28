@@ -41,7 +41,8 @@ describe('Server Integration Tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+    jest.resetModules();
+
     // Setup mock database
     mockCollection = {
       insertOne: jest.fn(),
@@ -61,12 +62,16 @@ describe('Server Integration Tests', () => {
   });
 
   describe('Server Setup', () => {
-    it('should configure CORS correctly', () => {
+    it('should setup middleware correctly', () => {
+      
+      // Reset everything so we setup the mock first
+      jest.resetModules();
+
       const { authenticationRoute } = require('../authenticate');
       
       // Mock the authentication route to avoid actual route registration
       authenticationRoute.mockImplementation((app) => {
-        // Simulate route registration
+        console.log("Mock authentication route registered");
       });
 
       // Import server to trigger setup
@@ -272,28 +277,41 @@ describe('Server Integration Tests', () => {
 
   describe('Production Mode', () => {
     it('should serve static files in production mode', () => {
-      // Mock path module
-      const path = require('path');
+      jest.resetModules();
+
+     // Mock path module
       jest.mock('path', () => ({
         resolve: jest.fn().mockReturnValue('/test/path')
       }));
 
-      // Mock express.static
-      const express = require('express');
-      const staticMiddleware = jest.fn();
-      express.static = jest.fn().mockReturnValue(staticMiddleware);
+      jest.mock('express', () => {
+        const actualExpress = jest.requireActual('express');
+        const staticMiddleware = jest.fn();
+
+        // Create a mock express function
+        function express() {
+          return actualExpress();
+        }
+        express.static = jest.fn().mockReturnValue(staticMiddleware);
+
+        return {
+          __esModule: true,
+          default: express,
+          static: express.static,
+        };
+      });
 
       // Mock production environment
-      jest.resetModules();
       jest.mock('../config', () => ({
         NODE_ENV: 'production',
         PORT: 7777,
         CORS_ORIGIN: 'http://localhost:8080'
       }));
 
-      // Import server to trigger production setup
-      const server = require('../server');
+      // Now require server to trigger production setup
+      require('../server');
 
+      const express = require('express');
       expect(express.static).toHaveBeenCalled();
     });
   });
@@ -336,6 +354,10 @@ describe('Server Integration Tests', () => {
 
   describe('CORS Configuration', () => {
     it('should allow requests from configured origin', async () => {
+
+       // Reset everything so we setup the mock first
+      jest.resetModules();
+
       const cors = require('cors');
       jest.mock('cors', () => jest.fn().mockReturnValue((req, res, next) => next()));
 
