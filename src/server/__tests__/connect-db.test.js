@@ -87,7 +87,7 @@ describe('Database Connection Module', () => {
 
       expect(MongoClient.connect).toHaveBeenCalledWith(
         expect.any(String),
-        { useNewUrlParser: true, useUnifiedTopology }
+        { useNewUrlParser: true, useUnifiedTopology: true }
       );
     });
   });
@@ -152,7 +152,7 @@ describe('Database Connection Module', () => {
       const { connectDB } = require('../connect-db');
       MongoClient.connect.mockRejectedValue(new Error('Invalid MongoDB connection string'));
 
-      await expect(connectDB()).rejects.toThrow('Invalid MongoDBconnection string');
+      await expect(connectDB()).rejects.toThrow('Invalid MongoDB connection string');
     });
   });
 });

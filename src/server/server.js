@@ -19,13 +19,15 @@ let app = express();
 
 
 app.use(
-    cors({
+   cors({
         origin: config.CORS_ORIGIN,
         credentials: true
     }),
     bodyParser.urlencoded({extended:true}),
     bodyParser.json()
 );
+
+
 // Only start the server if this file is being run directly
 if (require.main === module) {
     app.listen(port, () => {
