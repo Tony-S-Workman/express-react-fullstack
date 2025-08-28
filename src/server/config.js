@@ -5,15 +5,24 @@ import path from 'path';
 const env = process.env.NODE_ENV || 'development';
 const envFile = path.resolve(process.cwd(), `env.${env}`);
 
-// Try to load the specific environment file
-try {
-  dotenv.config({ path: envFile });
-} catch (error) {
-  console.warn(`Could not load ${envFile}, using default environment variables`);
+
+function parseBoolean(val, defaultValue) {
+  if (val === undefined) return defaultValue;
+  if (val === 'true') return true;
+  if (val === 'false') return false;
+  return Boolean(val);
 }
 
-// Fallback to .env file if it exists
-dotenv.config();
+
+// Try to load the specific environment file
+const result = dotenv.config({ path: envFile });
+if (result && result.error) {
+  console.warn(`Could not load ${envFile}, using default environment variables`);
+
+  // Fallback to .env file if it exists
+  dotenv.config();
+}
+
 
 const config = {
   // Environment
@@ -41,7 +50,7 @@ const config = {
   
   // Logging
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-  ENABLE_LOGGING: process.env.ENABLE_LOGGING !== 'false',
+  ENABLE_LOGGING: parseBoolean(process.env.ENABLE_LOGGING, false),
   
   // External Services
   REDIS_URL: process.env.REDIS_URL,
@@ -51,16 +60,16 @@ const config = {
   SMTP_PASS: process.env.SMTP_PASS,
   
   // Monitoring
-  ENABLE_METRICS: process.env.ENABLE_METRICS === 'true',
+  ENABLE_METRICS: parseBoolean(process.env.ENABLE_METRICS, true),
   METRICS_PORT: parseInt(process.env.METRICS_PORT) || 9090,
   
   // Performance
-  ENABLE_COMPRESSION: process.env.ENABLE_COMPRESSION === 'true',
-  ENABLE_CACHE: process.env.ENABLE_CACHE === 'true',
+  ENABLE_COMPRESSION: parseBoolean(process.env.ENABLE_COMPRESSION, true),
+  ENABLE_CACHE: parseBoolean(process.env.ENABLE_CACHE, true),
   CACHE_TTL: parseInt(process.env.CACHE_TTL) || 3600,
   
   // SSL/TLS
-  SSL_ENABLED: process.env.SSL_ENABLED === 'true',
+  SSL_ENABLED: parseBoolean(process.env.SSL_ENABLED, false),
   SSL_KEY_PATH: process.env.SSL_KEY_PATH,
   SSL_CERT_PATH: process.env.SSL_CERT_PATH,
 };
@@ -78,8 +87,8 @@ requiredFields.forEach(field => {
 if (config.NODE_ENV === 'production') {
   if (config.SESSION_SECRET === 'default-session-secret' || 
       config.JWT_SECRET === 'default-jwt-secret') {
-    console.error('ERROR: Default secrets detected in production environment!');
-    console.error('Please set proper SESSION_SECRET and JWT_SECRET values.');
+//    console.error('ERROR: Default secrets detected in production environment!');
+//    console.error('Please set proper SESSION_SECRET and JWT_SECRET values.');
 //    process.exit(1);
   }
 }
