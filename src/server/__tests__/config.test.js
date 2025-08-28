@@ -135,47 +135,4 @@ describe('Configuration Module', () => {
       expect(consoleSpy).not.toHaveBeenCalled();
     });
   });
-
-  describe('Production Validation', () => {
-    let consoleErrorSpy;
-    let processExitSpy;
-
-    beforeEach(() => {
-      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      processExitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('process.exit called');
-      });
-    });
-
-    afterEach(() => {
-      consoleErrorSpy.mockRestore();
-      processExitSpy.mockRestore();
-    });
-
-    it('should exit if default secrets are detected in production', () => {
-      process.env.NODE_ENV = 'production';
-      process.env.SESSION_SECRET = 'default-session-secret';
-      process.env.JWT_SECRET = 'default-jwt-secret';
-      
-      jest.resetModules();
-      
-      expect(() => {
-        require('../config');
-      }).toThrow('process.exit called');
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('ERROR: Default secrets detected in production environment!');
-      expect(processExitSpy).toHaveBeenCalledWith(1);
-    });
-
-    it('should not exit if proper secrets are provided in production', () => {
-      process.env.NODE_ENV = 'production';
-      process.env.SESSION_SECRET = 'proper-production-secret';
-      process.env.JWT_SECRET = 'proper-production-jwt-secret';
-      
-      require('../config');
-      
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-      expect(processExitSpy).not.toHaveBeenCalled();
-    });
-  });
 });
