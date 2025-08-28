@@ -9,6 +9,10 @@ const authenticationTokens = [];
 export const authenticationRoute = app => {
     app.post('/authenticate',async (req,res)=>{
         try {
+            if(req.body == null) {
+                return res.status(500).send(`Request body is null`);
+            }
+
             let { username, password } = req.body;
             if (!username || !password) {
                 return res.status(500).send(`User not found`);

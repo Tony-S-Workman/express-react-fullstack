@@ -431,7 +431,7 @@ describe('Authentication Module', () => {
       await authenticateHandler(mockRequest, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.send).toHaveBeenCalledWith('Cannot destructure property \'username\' of \'req.body\' as it is null.');
+      expect(mockResponse.send).toHaveBeenCalledWith('Request body is null');
     });
 
     it('should handle special characters in username', async () => {
