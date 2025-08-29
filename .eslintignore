@@ -1,0 +1,12 @@
+# Ignore build output
+dist/
+build/
+
+# Node modules
+node_modules/
+
+# ESLint cache
+.eslintcache
+
+# Environment files
+.env*

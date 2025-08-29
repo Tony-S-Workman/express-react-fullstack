@@ -203,11 +203,6 @@ describe('Authentication Module', () => {
     });
 
     it('should create new user successfully', async () => {
-      const newUser = {
-        id: 'user-123',
-        name: 'newuser',
-        passwordHash: 'hashed-password'
-      };
 
       const state = {
         session: { authenticated: 'AUTHENTICATED', id: 'user-123' },

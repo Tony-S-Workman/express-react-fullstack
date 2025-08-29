@@ -61,7 +61,7 @@ export const authenticationRoute = app => {
             if (user) {
                 res.status(500).send({message:"A user with that account name already exists."});
                 return;
-            };
+            }
 
             let userID = uuid();
             let groupID = uuid();

@@ -12,13 +12,15 @@ export function* taskCreationSaga(){
         const ownerID = yield select(state=>state.session.id);
         const taskID = uuid();
         let mutation = mutations.createTask(taskID, groupID, ownerID);
-        const { res } = yield axios.post(url + `/task/new`,{task:{
+
+        yield axios.post(url + `/task/new`,{task:{
             id:taskID,
             group: groupID,
             owner: ownerID,
             isComplete:false,
             name:"New task"
         }});
+        
         yield put(mutation);
     }
 }

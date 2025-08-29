@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import { MongoClient } from 'mongodb';
+
 
 // Mock dependencies
 jest.mock('mongodb', () => ({
@@ -31,8 +31,6 @@ jest.mock('../communicate-db', () => ({
 
 jest.mock('../initialize-db', () => ({}));
 
-// Import after mocking
-import server from '../server';
 
 describe('Server Integration Tests', () => {
   let app;
@@ -70,12 +68,12 @@ describe('Server Integration Tests', () => {
       const { authenticationRoute } = require('../authenticate');
       
       // Mock the authentication route to avoid actual route registration
-      authenticationRoute.mockImplementation((app) => {
+      authenticationRoute.mockImplementation(() => {
         console.log("Mock authentication route registered");
       });
 
       // Import server to trigger setup
-      const server = require('../server');
+      require('../server');
 
       expect(authenticationRoute).toHaveBeenCalled();
     });
@@ -100,7 +98,7 @@ describe('Server Integration Tests', () => {
       testApp.use(express.urlencoded({ extended: true }));
 
       // Mock authentication route
-      authenticationRoute.mockImplementation((app) => {
+      authenticationRoute.mockImplementation(() => {
         // Don't actually register routes for this test
       });
 
@@ -127,7 +125,7 @@ describe('Server Integration Tests', () => {
           res.status(200).send();
         });
 
-        const response = await request(app)
+        await request(app)
           .post('/task/new')
           .send({ task: taskData })
           .expect(200);
@@ -179,7 +177,7 @@ describe('Server Integration Tests', () => {
           res.status(200).send();
         });
 
-        const response = await request(app)
+        await request(app)
           .post('/task/update')
           .send({ task: taskData })
           .expect(200);
@@ -235,7 +233,7 @@ describe('Server Integration Tests', () => {
           res.status(200).send();
         });
 
-        const response = await request(app)
+        await request(app)
           .post('/comment/new')
           .send({ comment: commentData })
           .expect(200);
@@ -325,7 +323,7 @@ describe('Server Integration Tests', () => {
         res.status(200).send();
       });
 
-      const response = await request(app)
+      await request(app)
         .post('/task/new')
         .set('Content-Type', 'application/json')
         .send('invalid json')
@@ -362,7 +360,7 @@ describe('Server Integration Tests', () => {
       jest.mock('cors', () => jest.fn().mockReturnValue((req, res, next) => next()));
 
       // Import server to trigger CORS setup
-      const server = require('../server');
+      require('../server');
 
       expect(cors).toHaveBeenCalled();
     });

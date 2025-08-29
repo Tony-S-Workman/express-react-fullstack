@@ -11,7 +11,7 @@ let defaultState = {
 
 export const reducer = combineReducers({
     session(userSession = defaultState.session,action){
-        let {type,authenticated, session} = action;
+        let {type,authenticated} = action;
         switch(type){
             case mutations.SET_STATE:
                 return {...userSession, id: action.state.session.id};
@@ -23,15 +23,17 @@ export const reducer = combineReducers({
                 return userSession;
         }
     },
-    comments:(comments = defaultState.comments,action)=>{
+    comments: (comments = defaultState.comments, action) => {
         switch (action.type) {
-            case mutations.ADD_TASK_COMMENT:
-                let {type,owner,task,content,id} = action;
-                return [...comments,{owner,task,content,id}];
+            case mutations.ADD_TASK_COMMENT: {
+                const { owner, task, content, id } = action;
+                return [...comments, { owner, task, content, id }];
+            }
             case mutations.SET_STATE:
                 return action.state.comments;
+            default:
+                return comments;
         }
-        return comments;
     },
     users:(users = defaultState.users,action)=>{
         switch (action.type) {

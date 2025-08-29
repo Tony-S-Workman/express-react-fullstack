@@ -1,4 +1,3 @@
-import { MongoClient } from 'mongodb';
 import path from 'path';
 
 import express from 'express';
@@ -54,7 +53,6 @@ app.post('/task/new',async (req,res)=>{
 
 
 app.post('/task/update',async (req,res)=>{
-    let db = await connectDB();
     await updateTask(req.body.task);
     res.status(200).send();
 });
